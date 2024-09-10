@@ -1676,6 +1676,9 @@ class TestBootLoaderConfigGrub2:
 
         mock_exists.side_effect = side_effect
 
+        with open('../data/bootinfo.txt') as chrp:
+            grub2_test_chrp_boot = chrp.read()
+
         with patch('builtins.open', create=True) as mock_open:
             mock_open.return_value = MagicMock(spec=io.IOBase)
             file_handle = mock_open.return_value.__enter__.return_value
@@ -1694,12 +1697,7 @@ class TestBootLoaderConfigGrub2:
                 call('search --file --set=root /boot/0xffffffff\n'),
                 call('set prefix=($root)/boot/grub2\n'),
                 call('source ($root)/boot/grub2/grub.cfg\n'),
-                call(
-                    '\n<chrp-boot>\n<description>Bob</description>\n'
-                    '<os-name>Bob</os-name>\n<boot-script>'
-                    'boot &device;:1,\boot\grub2\powerpc-ieee1275\grub.elf'
-                    '</boot-script>\n</chrp-boot>\n'
-                ),
+                call(grub2_test_chrp_boot),
                 call('source /boot/grub2/grub.cfg\n')
             ]
 
